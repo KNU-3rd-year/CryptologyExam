@@ -77,4 +77,8 @@ signature = sign(message, private_key)
 print("Message:", message)
 print("Public Key:", public_key)
 print("Signature:", signature)
-print("Verification:", verify(message, signature, public_key))
+print("Verification (message):", verify(message, signature, public_key))
+
+modified_message = "Mark Yavorskyi"
+print("modified_message: ", modified_message)
+print("Verification (modified_message):", verify(modified_message, signature, public_key))
