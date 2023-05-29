@@ -3,6 +3,6 @@ import aes
 key = b'master key'
 message = b'secret message from Mark Yavorskyi'
 
-ciphertext = aes.encrypt(key, message)
-print(ciphertext)
-print(aes.decrypt(key, ciphertext))
+encrypted_message = aes.encrypt(key, message)
+print(encrypted_message)
+print(aes.decrypt(key, encrypted_message))

@@ -99,36 +99,37 @@ IV_SIZE = 16
 
 SALT_SIZE = 16
 HMAC_SIZE = 32
+WORKLOAD = 100000
 
 
-def get_key_iv(password, salt, workload=100000):
-    stretched = pbkdf2_hmac('sha256', password, salt, workload, AES_KEY_SIZE + IV_SIZE + HMAC_KEY_SIZE)
+def get_key_iv(password, salt):
+    stretched = pbkdf2_hmac('sha256', password, salt, WORKLOAD, AES_KEY_SIZE + IV_SIZE + HMAC_KEY_SIZE)
     aes_key, stretched = stretched[:AES_KEY_SIZE], stretched[AES_KEY_SIZE:]
     hmac_key, stretched = stretched[:HMAC_KEY_SIZE], stretched[HMAC_KEY_SIZE:]
     iv = stretched[:IV_SIZE]
     return aes_key, hmac_key, iv
 
 
-def encrypt(key, plaintext, workload=100000):
+def encrypt(key, plaintext):
     if isinstance(key, str):
         key = key.encode('utf-8')
     if isinstance(plaintext, str):
         plaintext = plaintext.encode('utf-8')
 
     salt = os.urandom(SALT_SIZE)
-    key, hmac_key, iv = get_key_iv(key, salt, workload)
+    key, hmac_key, iv = get_key_iv(key, salt)
     ciphertext = AES(key).encrypt(plaintext, iv)
     hmac = new_hmac(hmac_key, salt + ciphertext, 'sha256').digest()
 
     return hmac + salt + ciphertext
 
 
-def decrypt(key, ciphertext, workload=100000):
+def decrypt(key, ciphertext):
     if isinstance(key, str):
         key = key.encode('utf-8')
 
     hmac, ciphertext = ciphertext[:HMAC_SIZE], ciphertext[HMAC_SIZE:]
     salt, ciphertext = ciphertext[:SALT_SIZE], ciphertext[SALT_SIZE:]
-    key, hmac_key, iv = get_key_iv(key, salt, workload)
+    key, hmac_key, iv = get_key_iv(key, salt)
 
     return AES(key).decrypt(ciphertext, iv)
